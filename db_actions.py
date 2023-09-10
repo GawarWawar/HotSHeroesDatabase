@@ -101,80 +101,23 @@ class InstanceActions ():
             else:
                 return f"There no matching instance for this parametrs in table {self.table} yet"
 
-
-class Role ():
+class Role (InstanceActions, table = "roles"):
     def __init__(
-        self, 
+        self,
         name,
         id = None
     ) -> None:
         self.name = name
-        self.table = "roles"
-        if id == None:
-            with psycopg2.connect(
-                database = "postgres", user = "postgres", 
-                host= 'localhost', password = "123qwedsacxz",
-                port = 5432
-            ) as conn:
-                with conn.cursor() as cur:
-                    cur.execute(
-                        """SELECT * FROM roles 
-                        WHERE name=%s
-                        """, (self.name,)
-                    )
-                    element = cur.fetchone()
-                    try:
-                        if len(element) == 0:
-                            self.id = None
-                        else:
-                            self.id = element[0]
-                    except TypeError:
-                        self.id = None
+        self.id = self.get_id_by_name(id)
     
-    def add_role_to_db (self):
-        if self.id == None:
-            with psycopg2.connect(
-                database = "postgres", user = "postgres", 
-                host= 'localhost', password = "123qwedsacxz",
-                port = 5432
-            ) as conn:
-                with conn.cursor() as cur:
-                    try:
-                        cur.execute(
-                            f"""INSERT INTO roles ("name")
-                            VALUES (%s)
-                            RETURNING *
-                            """, (self.name,)
-                        )
-                    except UniqueViolation:
-                        conn.rollback()
-                    else:     
-                        element = cur.fetchone()
-                        conn.commit()
-                        self.id = element[0]
-                        return f"Role created sucsessfully with id {element[0]}"
-        else:
-            return f"Role already exist with id {self.id}"
+    def add_row_to_table(self):
+        columns = ("name")
+        values = (self.name,)
+        return super().add_row_to_table(columns, values)
     
-    def delete_role_from_db (self):
-        with psycopg2.connect(
-            database = "postgres", user = "postgres", 
-            host= 'localhost', password = "123qwedsacxz",
-            port = 5432
-        ) as conn:
-            if self.id != None:
-                with conn.cursor() as cur:
-                    cur.execute(
-                        """DELETE FROM roles CASCADE
-                        WHERE name = %s
-                        RETURNING *
-                        """, (self.name,)
-                    )
-                    self.id = None
-                    element = cur.fetchone()
-                    return f"Role with id {element[0]} deleted"
-            else:
-                return "This role doesnt exist yet"
+    def delete_row_from_table_by_id(self):
+        column_with_id_name = "id"
+        return super().delete_row_from_table_by_id(column_with_id_name)
 
                     
 class Hero (InstanceActions, table = "heroes"):
@@ -202,7 +145,7 @@ class Hero (InstanceActions, table = "heroes"):
 if __name__ == "__main__":
     
     role = Role("Assasin")
-    print(role.add_role_to_db())
+    print(role.add_row_to_table())
     hero = Hero("Jaina", role)
     print(hero.add_row_to_table())
     print(hero.delete_row_from_table_by_id())
