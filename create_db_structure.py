@@ -20,7 +20,6 @@ def delete_table_with_cascade(
             f"""DROP TABLE {table_name} CASCADE
                 """
         )
-        announce_deletion("roles")
     except UndefinedTable:
         conn.rollback()
         return False
