@@ -111,7 +111,7 @@ class RolesInstance (InstanceActions, table = "roles"):
         self.id = self.get_id_by_name(id)
     
     def add_row_to_table(self):
-        columns = ("name")
+        columns = ("name",)
         values = (self.name,)
         return super().add_row_to_table(columns, values)
     
@@ -120,15 +120,15 @@ class RolesInstance (InstanceActions, table = "roles"):
         return super().delete_row_from_table_by_id(column_with_id_name)
 
                     
-class HerosInstance (InstanceActions, table = "heroes"):
+class HeroesInstance (InstanceActions, table = "heroes"):
     def __init__(
         self,
         name,
-        role: RolesInstance,
+        role_id: int,
         id = None
     ) -> None:
         self.name = name
-        self.role_id = role.id
+        self.role_id = role_id
         self.id = self.get_id_by_name(id)
     
     def add_row_to_table(self):
@@ -144,9 +144,12 @@ class HerosInstance (InstanceActions, table = "heroes"):
         
 if __name__ == "__main__":
     
-    role = RolesInstance("Assasin")
-    print(role.add_row_to_table())
-    hero = HerosInstance("Jaina", role)
+    role0 = RolesInstance("Assasin")
+    print(role0.add_row_to_table())
+    print(RolesInstance("Bruiser").add_row_to_table())
+    print(RolesInstance("Tank").add_row_to_table())
+    print(RolesInstance("Heal").add_row_to_table())
+    hero = HeroesInstance("Jaina", role0.id)
     print(hero.add_row_to_table())
     print(hero.delete_row_from_table_by_id())
     print(hero.add_row_to_table())
