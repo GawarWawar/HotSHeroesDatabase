@@ -28,15 +28,36 @@ class InstanceActions ():
                         """, (self.name,)
                     )
                     element = cur.fetchone()
-                    try:
-                        if len(element) == 0:
-                            id = None
-                        else:
-                            id = element[0]
-                        return id
-                    except TypeError:
+                try:
+                    if len(element) == 0:
                         id = None
-                        return id
+                    else:
+                        id = element[0]
+                    return id
+                except TypeError:
+                    id = None
+                    return id
+    
+    def to_dict (self):
+        with psycopg2.connect(
+                database = "postgres", user = "postgres", 
+                host= 'localhost', password = "123qwedsacxz",
+                port = 5432
+            ) as conn:
+                with conn.cursor() as cur:
+                    cur.execute(f"""SELECT * FROM {self.table}
+                                WHERE id=%s
+                                """, (self.id,))
+                    column_names = [desc[0] for desc in cur.description]
+                    element = cur.fetchone()
+                dict_to_return = {}
+                for column_count, column in enumerate(column_names):
+                    dict_to_return.update(
+                        {
+                            column: element[column_count]
+                        }
+                    )
+                return dict_to_return
     
     def add_row_to_table(
         self,
@@ -96,8 +117,8 @@ class InstanceActions ():
                         """, (self.id,)
                     )
                     element = cur.fetchone()
-                    self.id = None
-                    return f"Instance in table {self.table} with id {element[0]} deleted"
+                self.id = None
+                return f"Instance in table {self.table} with id {element[0]} deleted"
             else:
                 return f"There no matching instance for this parametrs in table {self.table} yet"
 
@@ -119,7 +140,7 @@ class RolesInstance (InstanceActions, table = "roles"):
         column_with_id_name = "id"
         return super().delete_row_from_table_by_id(column_with_id_name)
 
-                    
+                 
 class HeroesInstance (InstanceActions, table = "heroes"):
     def __init__(
         self,
@@ -151,10 +172,4 @@ if __name__ == "__main__":
     print(RolesInstance("Heal").add_row_to_table())
     hero = HeroesInstance("Jaina", role0.id)
     print(hero.add_row_to_table())
-    print(hero.delete_row_from_table_by_id())
-    print(hero.add_row_to_table())
-    print(hero)
-
-# cur.execute("""SELECT * FROM roles""")
-# colnames = [desc[0] for desc in cur.description]
-# print(colnames)
+    print(hero.to_dict())
