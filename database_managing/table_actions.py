@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from psycopg2.errors import DuplicateTable, UniqueViolation
-from inctance_actions import InstanceActions, RolesInstance, HeroesInstance
+from instance_actions import InstanceActions, RolesInstance, HeroesInstance
 
 def create_class_instances_from_elements (
     elements: list,
