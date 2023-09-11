@@ -101,7 +101,7 @@ class InstanceActions ():
             else:
                 return f"There no matching instance for this parametrs in table {self.table} yet"
 
-class Role (InstanceActions, table = "roles"):
+class RolesInstance (InstanceActions, table = "roles"):
     def __init__(
         self,
         name,
@@ -120,11 +120,11 @@ class Role (InstanceActions, table = "roles"):
         return super().delete_row_from_table_by_id(column_with_id_name)
 
                     
-class Hero (InstanceActions, table = "heroes"):
+class HerosInstance (InstanceActions, table = "heroes"):
     def __init__(
         self,
         name,
-        role: Role,
+        role: RolesInstance,
         id = None
     ) -> None:
         self.name = name
@@ -144,9 +144,9 @@ class Hero (InstanceActions, table = "heroes"):
         
 if __name__ == "__main__":
     
-    role = Role("Assasin")
+    role = RolesInstance("Assasin")
     print(role.add_row_to_table())
-    hero = Hero("Jaina", role)
+    hero = HerosInstance("Jaina", role)
     print(hero.add_row_to_table())
     print(hero.delete_row_from_table_by_id())
     print(hero.add_row_to_table())
